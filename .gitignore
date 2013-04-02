@@ -1,0 +1,9 @@
+/target
+/project/target
+/src/target
+
+.*.s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
