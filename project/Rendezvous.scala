@@ -14,7 +14,7 @@ object RendezvousBuild extends Build {
       "Typesafe snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"
       ),
     libraryDependencies := Seq(
-      "com.typesafe.akka" %% "akka-actor" % "2.2-SNAPSHOT"
+      "com.typesafe.akka" %% "akka-actor" % "2.2-M2"
       )
     )
 
