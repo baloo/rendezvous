@@ -7,6 +7,7 @@ import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
 import akka.actor.PoisonPill
+import akka.actor.Terminated
 import akka.pattern.ask
 import akka.util.ByteString
 import akka.util.Timeout
@@ -94,6 +95,9 @@ class SideConn(side: Side, proxy: ActorRef, localAddress: InetSocketAddress, rem
               // Identify to session actor
               sa ! Identify(side, self)
               sessionActor = Some(sa)
+
+              // Watch lifecycle of session actor
+              context.watch(sa)
             case e =>
               println("Session manager returned unhandled message: " + e)
           }
@@ -127,8 +131,15 @@ class SideConn(side: Side, proxy: ActorRef, localAddress: InetSocketAddress, rem
       sessionActor.map { actor =>
         actor ! Payload(side, data)
       }
+
+    case Terminated(a) =>
+      sessionActor match {
+        case Some(sa) if sa == a => self ! PoisonPill
+        case _ => 
+      }
     case _: ConnectionClosed =>
       println("external actor disconnected")
+      sessionActor.foreach( _ ! PoisonPill )
       self ! PoisonPill
   }
 
